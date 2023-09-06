@@ -10,14 +10,19 @@ def hello():
 
 @app.route('/data', methods=['POST'])
 def receive_data():
-    name = request.form['name']
-    email = request.form['email']
-    message = request.form['message']
+    data = request.get_json()
+    name = data.get('name')
+    email = data.get('email')
+    message = data.get('message')
+    
+    if not all([name, email, message]):
+        return jsonify({"message": "Todos los campos son requeridos!"}), 400
 
     with open('data.txt', 'a') as f:
         f.write(f"Name: {name}, Email: {email}, Message: {message}\n")
     
     return jsonify({"message": "Datos almacenados correctamente!"}), 200
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5001)
